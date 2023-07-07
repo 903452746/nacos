@@ -19,10 +19,12 @@ package com.alibaba.nacos.plugin.auth.impl.persistence;
 import com.alibaba.nacos.common.utils.StringUtils;
 import com.alibaba.nacos.config.server.utils.LogUtil;
 import com.alibaba.nacos.persistence.configuration.condition.ConditionOnExternalStorage;
+import com.alibaba.nacos.persistence.constants.PersistenceConstant;
 import com.alibaba.nacos.persistence.datasource.DynamicDataSource;
 import com.alibaba.nacos.persistence.model.Page;
 import com.alibaba.nacos.persistence.repository.PaginationHelper;
 import com.alibaba.nacos.persistence.repository.extrnal.ExternalStoragePaginationHelperImpl;
+import com.alibaba.nacos.sys.env.EnvUtil;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.jdbc.CannotGetJdbcConnectionException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -32,6 +34,7 @@ import javax.annotation.PostConstruct;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 import static com.alibaba.nacos.plugin.auth.impl.persistence.AuthRowMapperManager.PERMISSION_ROW_MAPPER;
 
@@ -47,19 +50,25 @@ public class ExternalPermissionPersistServiceImpl implements PermissionPersistSe
     private JdbcTemplate jt;
     
     private static final String PATTERN_STR = "*";
-    
+
+    private String resourceColumn = "resource";
+
     @PostConstruct
     protected void init() {
+        String dbType = EnvUtil.getProperty(PersistenceConstant.DATASOURCE_PLATFORM_PROPERTY_OLD, "").toLowerCase();
+        if (Objects.equals(dbType, "oracle")) {
+            resourceColumn = "\"RESOURCE\"";
+        }
         jt = DynamicDataSource.getInstance().getDataSource().getJdbcTemplate();
     }
-    
+
     @Override
     public Page<PermissionInfo> getPermissions(String role, int pageNo, int pageSize) {
         PaginationHelper<PermissionInfo> helper = createPaginationHelper();
         
         String sqlCountRows = "SELECT count(*) FROM permissions WHERE ";
-        String sqlFetchRows = "SELECT role,resource,action FROM permissions WHERE ";
-        
+        String sqlFetchRows = "SELECT role," + resourceColumn + ",action FROM permissions WHERE ";
+
         String where = " role= ? ";
         List<String> params = new ArrayList<>();
         if (StringUtils.isNotBlank(role)) {
@@ -96,9 +105,9 @@ public class ExternalPermissionPersistServiceImpl implements PermissionPersistSe
      */
     @Override
     public void addPermission(String role, String resource, String action) {
-        
-        String sql = "INSERT INTO permissions (role, resource, action) VALUES (?, ?, ?)";
-        
+
+        String sql = "INSERT INTO permissions (role," +resourceColumn +", action) VALUES (?, ?, ?)";
+
         try {
             jt.update(sql, role, resource, action);
         } catch (CannotGetJdbcConnectionException e) {
@@ -116,8 +125,8 @@ public class ExternalPermissionPersistServiceImpl implements PermissionPersistSe
      */
     @Override
     public void deletePermission(String role, String resource, String action) {
-        
-        String sql = "DELETE FROM permissions WHERE role=? AND resource=? AND action=?";
+
+        String sql = "DELETE FROM permissions WHERE role=? AND " +resourceColumn+"=? AND action=?";
         try {
             jt.update(sql, role, resource, action);
         } catch (CannotGetJdbcConnectionException e) {
@@ -131,8 +140,8 @@ public class ExternalPermissionPersistServiceImpl implements PermissionPersistSe
         PaginationHelper<PermissionInfo> helper = createPaginationHelper();
         
         String sqlCountRows = "SELECT count(*) FROM permissions ";
-        String sqlFetchRows = "SELECT role,resource,action FROM permissions ";
-        
+        String sqlFetchRows = "SELECT role," +resourceColumn+",action FROM permissions ";
+
         StringBuilder where = new StringBuilder(" WHERE 1=1");
         List<String> params = new ArrayList<>();
         if (StringUtils.isNotBlank(role)) {
