@@ -73,6 +73,8 @@ public class StartingApplicationListener implements NacosApplicationListener {
     private static final String DEFAULT_FUNCTION_MODE = "All";
     
     private static final String DEFAULT_DATABASE = "mysql";
+
+    private static final String ORACLE_DATABASE  = "oracle";
     
     /**
      * May be removed with the upgrade of springboot version.
@@ -255,7 +257,7 @@ public class StartingApplicationListener implements NacosApplicationListener {
         String platform = this.getDatasourcePlatform(env);
         boolean useExternalStorage =
                 !DEFAULT_DATASOURCE_PLATFORM.equalsIgnoreCase(platform) && !DERBY_DATABASE.equalsIgnoreCase(platform);
-        if (!Objects.equals(platform,"oracle")){
+        if (!Objects.equals(platform, ORACLE_DATABASE)) {
             NamespaceUtil.setNamespaceDefaultId("");
         }
         // must initialize after setUseExternalDB

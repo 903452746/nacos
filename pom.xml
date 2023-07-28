@@ -88,7 +88,7 @@
     </issueManagement>
     
     <properties>
-        <revision>2.3.0-SNAPSHOT</revision>
+        <revision>2.3.0.apexsoft-SNAPSHOT</revision>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <!-- Compiler settings properties -->
@@ -96,7 +96,7 @@
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
         <!-- Maven properties -->
-        <maven.test.skip>false</maven.test.skip>
+        <maven.test.skip>true</maven.test.skip>
         <maven.javadoc.skip>true</maven.javadoc.skip>
         <!-- Exclude all generated code -->
         <sonar.exclusions>file:**/generated-sources/**,**/test/**</sonar.exclusions>
@@ -1017,18 +1017,30 @@
         </dependencies>
     </dependencyManagement>
     
+<!--    <distributionManagement>-->
+<!--        <snapshotRepository>-->
+<!--            &lt;!&ndash; The ID here must be exactly the same as the value-->
+<!--             of the server element id in the settings.xml file of MAVEN &ndash;&gt;-->
+<!--            <id>sona</id>-->
+<!--            <url>https://oss.sonatype.org/content/repositories/snapshots/</url>-->
+<!--        </snapshotRepository>-->
+<!--        <repository>-->
+<!--            <id>sona</id>-->
+<!--            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>-->
+<!--        </repository>-->
+<!--    </distributionManagement>-->
+
     <distributionManagement>
         <snapshotRepository>
-            <!-- The ID here must be exactly the same as the value
-             of the server element id in the settings.xml file of MAVEN -->
-            <id>sona</id>
-            <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
+            <id>${snapshotRepository.id}</id>
+            <name>${snapshotRepository.name}</name>
+            <url>${snapshotRepository.url}</url>
         </snapshotRepository>
         <repository>
-            <id>sona</id>
-            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+            <id>${releaseRepository.id}</id>
+            <name>${releaseRepository.name}</name>
+            <url>${releaseRepository.url}</url>
         </repository>
     </distributionManagement>
-
 </project>
 

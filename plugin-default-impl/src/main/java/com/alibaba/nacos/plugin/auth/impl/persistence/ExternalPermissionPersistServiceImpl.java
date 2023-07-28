@@ -53,10 +53,12 @@ public class ExternalPermissionPersistServiceImpl implements PermissionPersistSe
 
     private String resourceColumn = "resource";
 
+    private static final String ORACLE_DATABASE  = "oracle";
+
     @PostConstruct
     protected void init() {
         String dbType = EnvUtil.getProperty(PersistenceConstant.DATASOURCE_PLATFORM_PROPERTY_OLD, "").toLowerCase();
-        if (Objects.equals(dbType, "oracle")) {
+        if (Objects.equals(dbType, ORACLE_DATABASE)) {
             resourceColumn = "\"RESOURCE\"";
         }
         jt = DynamicDataSource.getInstance().getDataSource().getJdbcTemplate();
@@ -106,7 +108,7 @@ public class ExternalPermissionPersistServiceImpl implements PermissionPersistSe
     @Override
     public void addPermission(String role, String resource, String action) {
 
-        String sql = "INSERT INTO permissions (role," +resourceColumn +", action) VALUES (?, ?, ?)";
+        String sql = "INSERT INTO permissions (role," + resourceColumn + ", action) VALUES (?, ?, ?)";
 
         try {
             jt.update(sql, role, resource, action);
@@ -126,7 +128,7 @@ public class ExternalPermissionPersistServiceImpl implements PermissionPersistSe
     @Override
     public void deletePermission(String role, String resource, String action) {
 
-        String sql = "DELETE FROM permissions WHERE role=? AND " +resourceColumn+"=? AND action=?";
+        String sql = "DELETE FROM permissions WHERE role=? AND " + resourceColumn + "=? AND action=?";
         try {
             jt.update(sql, role, resource, action);
         } catch (CannotGetJdbcConnectionException e) {
@@ -140,7 +142,7 @@ public class ExternalPermissionPersistServiceImpl implements PermissionPersistSe
         PaginationHelper<PermissionInfo> helper = createPaginationHelper();
         
         String sqlCountRows = "SELECT count(*) FROM permissions ";
-        String sqlFetchRows = "SELECT role," +resourceColumn+",action FROM permissions ";
+        String sqlFetchRows = "SELECT role," + resourceColumn + ",action FROM permissions ";
 
         StringBuilder where = new StringBuilder(" WHERE 1=1");
         List<String> params = new ArrayList<>();
