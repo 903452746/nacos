@@ -17,6 +17,7 @@
 import { Message } from '@alifd/next';
 import request from '../utils/request';
 import { UPDATE_USER, SIGN_IN, USER_LIST, ROLE_LIST, PERMISSIONS_LIST } from '../constants';
+import { AES } from 'aas-aes-js';
 
 const initialState = {
   users: {
@@ -57,8 +58,13 @@ const getUsers = params => dispatch =>
  * 创建用户
  * @param {*} param0
  */
-const createUser = ([username, password]) =>
-  request.post('v1/auth/users', { username, password }).then(res => successMsg(res));
+const createUser = ([username, password]) => {
+  AES.setSecret(username);
+  const aesPassword = AES.encryptBase64(password);
+  return request
+    .post('v1/auth/users', { username, password: aesPassword })
+    .then(res => successMsg(res));
+};
 
 /**
  * 通过username 模糊匹配
@@ -78,8 +84,13 @@ const deleteUser = username =>
  * 重置密码
  * @param {*} param0
  */
-const passwordReset = ([username, newPassword]) =>
-  request.put('v1/auth/users', { username, newPassword }).then(res => successMsg(res));
+const passwordReset = ([username, newPassword]) => {
+  AES.setSecret(username);
+  const aesPassword = AES.encryptBase64(newPassword);
+  return request
+    .put('v1/auth/users', { username, newPassword: aesPassword })
+    .then(res => successMsg(res));
+};
 
 /**
  * 角色列表
