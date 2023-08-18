@@ -17,7 +17,7 @@
 import { Message } from '@alifd/next';
 import request from '../utils/request';
 import { UPDATE_USER, SIGN_IN, USER_LIST, ROLE_LIST, PERMISSIONS_LIST } from '../constants';
-import { AES } from 'aas-aes-js';
+import { encryptStr } from '../utils/nacosutil';
 
 const initialState = {
   users: {
@@ -59,8 +59,7 @@ const getUsers = params => dispatch =>
  * @param {*} param0
  */
 const createUser = ([username, password]) => {
-  AES.setSecret(username);
-  const aesPassword = AES.encryptBase64(password);
+  const aesPassword = encryptStr(password);
   return request
     .post('v1/auth/users', { username, password: aesPassword })
     .then(res => successMsg(res));
@@ -85,8 +84,7 @@ const deleteUser = username =>
  * @param {*} param0
  */
 const passwordReset = ([username, newPassword]) => {
-  AES.setSecret(username);
-  const aesPassword = AES.encryptBase64(newPassword);
+  const aesPassword = encryptStr(newPassword);
   return request
     .put('v1/auth/users', { username, newPassword: aesPassword })
     .then(res => successMsg(res));

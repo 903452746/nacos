@@ -15,6 +15,8 @@
  */
 
 /* eslint-disable import/prefer-default-export */
+import CryptoJS from 'crypto-js';
+
 export const throttle = (fn, delay) => {
   let timer = null;
   return function(...args) {
@@ -71,4 +73,14 @@ export const generateUrl = (url, params) => {
 
 export const isPlainObject = obj => {
   return Object.prototype.toString.call(obj) === '[object Object]';
+};
+
+export const encryptStr = str => {
+  const key = CryptoJS.enc.Utf8.parse('uBdUx82vPHkDKb284d7NkjFoNcKWBuka');
+  const iv = CryptoJS.enc.Utf8.parse('57635e22b48356ad');
+  return CryptoJS.AES.encrypt(str, key, {
+    iv,
+    mode: CryptoJS.mode.CBC,
+    padding: CryptoJS.pad.Pkcs7,
+  }).toString();
 };

@@ -22,7 +22,7 @@ import './index.scss';
 import Header from '../../layouts/Header';
 import PropTypes from 'prop-types';
 import { login } from '../../reducers/base';
-import { AES } from 'aas-aes-js';
+import { encryptStr } from '../../utils/nacosutil';
 
 const FormItem = Form.Item;
 
@@ -55,8 +55,7 @@ class Login extends React.Component {
         return;
       }
       const { username, password } = values;
-      AES.setSecret(username);
-      const aesPassword = AES.encryptBase64(password);
+      const aesPassword = encryptStr(password);
       login({ username, password: aesPassword })
         .then(res => {
           localStorage.setItem('token', JSON.stringify(res));
