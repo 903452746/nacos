@@ -40,6 +40,7 @@ const I18N_CONF = {
   },
   MainLayout: {
     nacosName: 'NACOS',
+    nacosMode: 'MODE',
     doesNotExist: 'The page you visit does not exist',
     configurationManagementVirtual: 'ConfigManagement',
     configurationManagement: 'Configurations',
@@ -62,6 +63,7 @@ const I18N_CONF = {
     userList: 'User List',
     roleManagement: 'Role Management',
     privilegeManagement: 'Privilege Management',
+    consoleClosed: 'Console Closed',
   },
   Password: {
     passwordNotConsistent: 'The passwords are not consistent',
@@ -293,7 +295,7 @@ const I18N_CONF = {
     successfulEntry: 'Successful Entry',
     unprocessedEntry: 'Unprocessed Entry',
     pubNoData: 'No results found.',
-    configurationManagement8: 'configuration management',
+    configurationManagement8: 'Configuration Management',
     queryResults: 'Found',
     articleMeetRequirements: 'configuration items',
     fuzzydMode: 'Default fuzzy query mode',
@@ -363,6 +365,7 @@ const I18N_CONF = {
     delSuccessMsg: 'delete successful',
     cloneEditableTitle: 'Modify Data Id and Group (optional)',
     authFail: 'Auth failed',
+    copyNamespaceID: 'Copy namespace ID',
   },
   NewConfig: {
     newListingMain: 'Create Configuration',
@@ -667,6 +670,9 @@ const I18N_CONF = {
     readOnly: 'read only',
     writeOnly: 'write only',
     readWrite: 'Read and write',
+  },
+  Components: {
+    copySuccessfully: 'Success copied!',
   },
 };
 

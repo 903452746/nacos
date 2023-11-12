@@ -143,8 +143,8 @@ public class NamingGrpcClientProxyTest {
         Field uuidField = NamingGrpcClientProxy.class.getDeclaredField("uuid");
         uuidField.setAccessible(true);
         uuid = (String) uuidField.get(client);
-        
-        Assert.assertTrue(RpcClientFactory.getClient(uuid) != null);
+    
+        Assert.assertNotNull(RpcClientFactory.getClient(uuid));
         Field rpcClientField = NamingGrpcClientProxy.class.getDeclaredField("rpcClient");
         rpcClientField.setAccessible(true);
         ((RpcClient) rpcClientField.get(client)).shutdown();
@@ -187,7 +187,7 @@ public class NamingGrpcClientProxyTest {
         try {
             client.registerService(SERVICE_NAME, GROUP_NAME, instance);
         } catch (NacosException ex) {
-            Assert.assertEquals(null, ex.getCause());
+            Assert.assertNull(ex.getCause());
             
             throw ex;
         }
@@ -216,6 +216,33 @@ public class NamingGrpcClientProxyTest {
             if (request instanceof InstanceRequest) {
                 InstanceRequest request1 = (InstanceRequest) request;
                 return request1.getType().equals(NamingRemoteConstants.DE_REGISTER_INSTANCE);
+            }
+            return false;
+        }));
+    }
+    
+    @Test
+    public void testDeregisterServiceForBatchRegistered() throws NacosException {
+        try {
+            List<Instance> instanceList = new ArrayList<>();
+            instance.setHealthy(true);
+            instanceList.add(instance);
+            instanceList.add(new Instance());
+            client.batchRegisterService(SERVICE_NAME, GROUP_NAME, instanceList);
+        } catch (Exception ignored) {
+        }
+        response = new BatchInstanceResponse();
+        when(this.rpcClient.request(any())).thenReturn(response);
+        List<Instance> instanceList = new ArrayList<>();
+        instance.setHealthy(true);
+        instanceList.add(instance);
+        client.deregisterService(SERVICE_NAME, GROUP_NAME, instance);
+        verify(this.rpcClient, times(1)).request(argThat(request -> {
+            if (request instanceof BatchInstanceRequest) {
+                BatchInstanceRequest request1 = (BatchInstanceRequest) request;
+                request1.setRequestId("1");
+                return request1.getInstances().size() == 1 && request1.getType()
+                        .equals(NamingRemoteConstants.BATCH_REGISTER_INSTANCE);
             }
             return false;
         }));
@@ -312,7 +339,7 @@ public class NamingGrpcClientProxyTest {
         ServiceInfo info = new ServiceInfo(GROUP_NAME + "@@" + SERVICE_NAME + "@@" + CLUSTERS);
         res.setServiceInfo(info);
         when(this.rpcClient.request(any())).thenReturn(res);
-        ServiceInfo actual = client.queryInstancesOfService(SERVICE_NAME, GROUP_NAME, CLUSTERS, 0, false);
+        ServiceInfo actual = client.queryInstancesOfService(SERVICE_NAME, GROUP_NAME, CLUSTERS, false);
         Assert.assertEquals(info, actual);
     }
     
@@ -408,7 +435,7 @@ public class NamingGrpcClientProxyTest {
     @Test
     public void testShutdown() throws Exception {
         client.shutdown();
-        Assert.assertTrue(RpcClientFactory.getClient(uuid) == null);
+        Assert.assertNull(RpcClientFactory.getClient(uuid));
         //verify(this.rpcClient, times(1)).shutdown();
     }
     
