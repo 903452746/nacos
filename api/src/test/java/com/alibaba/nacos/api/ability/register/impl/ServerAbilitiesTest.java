@@ -16,15 +16,21 @@
 
 package com.alibaba.nacos.api.ability.register.impl;
 
-import org.junit.Test;
+import com.alibaba.nacos.api.ability.constant.AbilityKey;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class ServerAbilitiesTest {
+class ServerAbilitiesTest {
     
     @Test
-    public void testGetStaticAbilities() {
-        // TODO add the server abilities.
-        assertTrue(ServerAbilities.getStaticAbilities().isEmpty());
+    void testGetStaticAbilities() {
+        assertFalse(ServerAbilities.getStaticAbilities().isEmpty());
+    }
+    
+    @Test
+    void testSupportPersistentInstanceByGrpcAbilities() {
+        assertTrue(ServerAbilities.getStaticAbilities().get(AbilityKey.SERVER_SUPPORT_PERSISTENT_INSTANCE_BY_GRPC));
     }
 }
